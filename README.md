@@ -1,2 +1,2 @@
 # VIS-project
-CS5660 final project
+CS5630 final project
