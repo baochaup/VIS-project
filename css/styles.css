@@ -1,0 +1,50 @@
+header {
+  padding: 0.5em;
+  text-align: center;
+  height: 100px;
+}
+
+.content {
+  width: 1000px;
+  margin: 30px auto;
+
+  display: grid;
+  grid-template-columns: 500px 500px;
+  grid-template-rows: 500px 100px 500px 500px;
+}
+
+.worldmap {
+  grid-column: 1 / -1;
+  grid-row: 1 / 2;
+  background-color: aliceblue;
+}
+
+.desc {
+  grid-column: 1 / -1;
+  grid-row: 2 / 3;
+  background-color: antiquewhite;
+}
+
+.flowchart {
+  grid-column: 1 / 2;
+  grid-row: 3 / 4;
+  background-color: aqua;
+}
+
+.linechart {
+  grid-column: 2 / 3;
+  grid-row: 3 / 4;
+  background-color: aquamarine;
+}
+
+.table {
+  grid-column: 1 / 2;
+  grid-row: 4 / 5;
+  background-color: azure;
+}
+
+.barchart {
+  grid-column: 2 / 3;
+  grid-row: 4 / 5;
+  background-color: beige;
+}
