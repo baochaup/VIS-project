@@ -5,12 +5,12 @@ header {
 }
 
 .content {
-  width: 1000px;
+  width: 1400px;
   margin: 30px auto;
 
   display: grid;
-  grid-template-columns: 500px 500px;
-  grid-template-rows: 500px 100px 500px 500px;
+  grid-template-columns: 700px 700px;
+  grid-template-rows: 500px 100px 700px 700px;
 }
 
 .worldmap {
