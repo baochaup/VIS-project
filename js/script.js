@@ -32,8 +32,10 @@ async function loadFile(file) {
 
 async function loadData() {
   let gps = await loadFile('data/world_country_latitude_and_longitude_values.csv');
+  let mf = await loadFile('data/migflow.csv');
 
   return {
-    'coordinates': gps,
+    "coordinates": gps,
+    "migration": mf
   };
 }
