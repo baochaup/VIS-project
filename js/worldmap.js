@@ -13,16 +13,15 @@ class CountryData {
 
 class WorldMap {
   constructor(data, activeYear, isImmigration, updateActCountry) {
-
     this.activeYear = activeYear;
-    this.isImmigration =isImmigration;
+    this.isImmigration = isImmigration;
     this.activeCountry = null;
     this.updateActCountry = updateActCountry;
-    
+
     this.coordinates = data.coordinates;
     this.migration = data.migration;
 
-    this.projection = d3.geoEquirectangular().scale(200).translate([700, 290]);
+    this.projection = d3.geoEquirectangular().scale(223).translate([700, 350]);
     //this.projection = d3.geoOrthographic().scale(250).translate([700, 250]);
 
     this.map = d3.select("#map-chart").append("svg");
@@ -67,14 +66,14 @@ class WorldMap {
       .classed("countries", true);
 
     // draw countries circles
-    let circles = this.map
+    /*let circles = this.map
       .selectAll("circle")
       .data(countryData)
       .join("circle")
       .classed("country-marker", true)
       .attr("cx", (d) => this.projection([d.longitude, d.latitude])[0])
       .attr("cy", (d) => this.projection([d.longitude, d.latitude])[1])
-      .attr("r", 2);
+      .attr("r", 2);*/
 
     // draw markers
     let ids = this.migration.map((d) => d.id);
@@ -117,47 +116,69 @@ class WorldMap {
 
   // draw data flow lines
   drawLinks() {
-
+    
     // remove before drawing new lines
     this.map.select("#lines-group").remove();
+    // clear highlight countries bf draw
+    this.clearHighlight();
 
     let linesGrp = this.map.append("g").attr("id", "lines-group");
-    
-    let lines = [];
-    let type = this.isImmigration? "Immigrants" : "Emigrants";
-    let flows = this.migration.filter(d => d.type === type && d.id === this.activeCountry);
-    //console.log(flows);
 
-    flows.forEach(d => {
-      if (d.od_id === "XX" || d[this.activeYear] === 0 || isNaN(d[this.activeYear])) {
+    let lines = [];
+    let type = this.isImmigration ? "Immigrants" : "Emigrants";
+
+    // select only countries has migration data with selected country
+    let flows = this.migration.filter(
+      (d) => d.type === type && d.id === this.activeCountry
+    );
+
+    flows.forEach((d) => {
+      if (
+        d.od_id === "XX" ||
+        d[this.activeYear] === 0 ||
+        isNaN(d[this.activeYear])
+      ) {
         return;
       }
-      //console.log(d[year]);
-      let sourceID = this.isImmigration? d.od_id : this.activeCountry;
-      let destID = this.isImmigration? this.activeCountry : d.od_id;
-      
-      let source = this.coordinates.find(d => d.country_code === sourceID);
-      let dest = this.coordinates.find(d => d.country_code === destID);
+      let sourceID = this.isImmigration ? d.od_id : this.activeCountry;
+      let destID = this.isImmigration ? this.activeCountry : d.od_id;
 
-      //if (!source) console.log(d.od_id, d.origin_dest);
- 
+      let source = this.coordinates.find((d) => d.country_code === sourceID);
+      let dest = this.coordinates.find((d) => d.country_code === destID);
+
       let sourceLong = +source.longitude;
       let sourceLat = +source.latitude;
       let destLong = +dest.longitude;
       let destLat = +dest.latitude;
 
-      source = [sourceLong, sourceLat]
-      dest = [destLong, destLat]
-      let toPush = {type: "LineString", coordinates: [source, dest]}
-      lines.push(toPush)
+      source = [sourceLong, sourceLat];
+      dest = [destLong, destLat];
+      let toPush = { type: "LineString", coordinates: [source, dest] };
+      lines.push(toPush);
+
+      // highlight filtered countries
+      this.map.select(`#${d.od_id}`).classed("country-highlight", true);
+      let highlight = this.coordinates.find((c) => c.country_code === d.od_id);
+      this.map.append("circle")
+        .join("circle")
+        .classed("country-marker", true)
+        .attr("cx", this.projection([highlight.longitude, highlight.latitude])[0])
+        .attr("cy", this.projection([highlight.longitude, highlight.latitude])[1])
+        .attr("r", 3);
     });
     //console.log(lines);
 
-    linesGrp.selectAll("flow-path")
+    linesGrp
+      .selectAll("flow-path")
       .data(lines)
       .enter()
       .append("path")
       .classed("line-string", true)
       .attr("d", (d) => this.path(d));
+  }
+
+  clearHighlight() {
+    this.map.selectAll(".country-highlight").classed("country-highlight", false);
+    this.map.selectAll(".country-marker").remove();
   }
 }

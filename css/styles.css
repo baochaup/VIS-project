@@ -11,13 +11,15 @@ header {
 
   display: grid;
   grid-template-columns: 700px 700px;
-  grid-template-rows: 500px 100px 700px 700px;
+  grid-template-rows: 600px 100px 700px 700px;
 }
 
 /*world map styling*/
 .worldmap {
   grid-column: 1 / -1;
   grid-row: 1 / 2;
+  background: ivory;
+  border: 1px solid darkgray;
 }
 
 #map-chart svg {
@@ -28,13 +30,14 @@ header {
 
 .countries {
   fill: #d9d9d9;
-  stroke: #fff;
+  stroke: rgb(0, 0, 0);
   stroke-width: .8px;
 }
 
 .country-marker {
-  fill: black;
-  stroke-width: .8px;
+  fill: none;
+  stroke: red;
+  stroke-width: 1px;
 }
 
 .mark {
@@ -45,6 +48,15 @@ header {
   fill: none;
   stroke: orangered;
   stroke-width: 0.5;
+}
+
+.country-highlight {
+  fill: #747474;
+}
+
+.country-highlight:hover {
+  cursor: pointer;
+  fill: rgb(56, 56, 56);
 }
 
 /*description styling*/
