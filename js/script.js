@@ -13,6 +13,7 @@ loadData().then((data) => {
   function updateFlow(isImmigration) {
     that.isImmigration = isImmigration;
     worldMap.updateFlow(that.isImmigration);
+    toggleFlow.updateLabel(that.isImmigration);
   }
 
   function updateActCountry(countryID) {

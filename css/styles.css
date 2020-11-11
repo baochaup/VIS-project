@@ -29,7 +29,7 @@ header {
 }
 
 .countries {
-  fill: #d9d9d9;
+  fill: white;
   stroke: rgb(0, 0, 0);
   stroke-width: .8px;
 }
@@ -44,19 +44,27 @@ header {
   cursor: pointer;
 }
 
-.line-string {
+/*.line-string {
   fill: none;
   stroke: orangered;
   stroke-width: 0.5;
-}
+}*/
 
-.country-highlight {
-  fill: #747474;
+/*.country-highlight {
+  stroke-width: 1.5px;
 }
 
 .country-highlight:hover {
   cursor: pointer;
   fill: rgb(56, 56, 56);
+}*/
+
+.selected-country {
+  fill: burlywood;
+}
+
+.legend-label {
+  font-size: small;
 }
 
 /*description styling*/
@@ -67,6 +75,7 @@ header {
 
 .toolbar {
   height: 24px;
+  margin-top: 10px;
 }
 
 /*For the slider*/

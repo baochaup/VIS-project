@@ -1,7 +1,7 @@
 class ToggleButton {
   constructor(isImmigration, updateFlow) {
     this.isImmigration = isImmigration;
-    this.updateFlow = updateFlow;
+    this.updateFlow = updateFlow;  
   }
 
   drawToggle() {
@@ -11,7 +11,9 @@ class ToggleButton {
       .append("div")
       .attr("id", "tool-bar")
       .classed("toolbar", true);
-    let toggle = this.renderToggle(toolBar, "Switch to Immigration/Emigration");
+    
+    // default is Immigration
+    let toggle = this.renderToggle(toolBar, `Switch to Emigration`);
     toggle.attr("id", "dvide");
     toggle.on("click", () => {
       this.updateFlow(toggle.node().checked);
@@ -28,5 +30,10 @@ class ToggleButton {
       .property("checked", () => this.isImmigration);
     label.append("span").classed("slider round", true);
     return check;
+  }
+
+  updateLabel(isImmigration) {
+    let label = isImmigration? "Emigration" : "Immigration";
+    d3.select("#tool-bar").select(".toggle-text").text(`Switch to ${label}`);
   }
 }
