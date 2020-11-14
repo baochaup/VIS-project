@@ -33,6 +33,10 @@ loadData().then((data) => {
   d3.json("data/world-geo.json").then((mapData) => {
     worldMap.drawMap(mapData);
   });
+
+  // Flow Chart
+  const flowChart = new FlowChart(data, this.activeYear, this.isImmigration, updateActCountry);
+  flowChart.drawChart();
 });
 
 // ******* DATA LOADING *******

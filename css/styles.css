@@ -28,6 +28,12 @@ header {
   margin: auto;
 }
 
+#flow-chart svg {
+  width: 100%;
+  height: 100%;
+  margin: auto;
+}
+
 .countries {
   fill: white;
   stroke: rgb(0, 0, 0);
