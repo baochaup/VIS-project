@@ -1,4 +1,10 @@
-
+class Country {
+    constructor(id, name, index) {
+        this.id = id;
+        this.name = name;
+        this.index = index;
+    }
+}
 
 class FlowChart {
     constructor(data, activeYear, isImmigration, updateActCountry) {
@@ -6,10 +12,8 @@ class FlowChart {
         this.isImmigration = isImmigration;
         this.activeCountry = null;
         this.updateActCountry = updateActCountry;
-
-
+        this.migration = data.migration;
         this.chart = d3.select("#flow-chart").append("svg");
-
     }
 
     drawChart(){
@@ -20,11 +24,45 @@ class FlowChart {
             [ 1013,   990,  940, 6907]
         ];
 
+        let countries = new Set();
+        let countryDict = {};
+        let index = 0;
+
+
+        this.migration.forEach((d) => {
+            let size = countries.size
+            if(countries.add(d.id).size > size){
+                countryDict[d.id] = new Country(d.id, d.country_name, index)
+                index++;
+            }
+        });
+
+        //Create empty matrix
+        let countryMatrix = []
+        for(let i = 0; i < countries.size; i++){
+            let arr = [];
+            arr.length = countries.size;
+            countryMatrix.push(arr.fill(0))
+        }
+
+        let year = 2013;
+
+        this.migration.forEach((d) => {
+            if(countries.has(d.od_id)){
+                if(!isNaN(d[year])){
+                    countryMatrix[countryDict[d.id].index][countryDict[d.od_id].index] = d[year];
+                }
+
+                //console.log(countryDict[d.id])
+            }
+        });
+
+
         // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
         let res = d3.chord()
-            .padAngle(0.05)     // padding between entities (black arc)
+            .padAngle(0.02)     // padding between entities (black arc)
             .sortSubgroups(d3.descending)
-            (matrix)
+            (countryMatrix)
 
         // add the groups on the inner part of the circle
         this.chart
@@ -54,7 +92,6 @@ class FlowChart {
                 .radius(300)
             )
             .style("fill", "#69b3a2")
-            .style("stroke", "black");
 
     }
 
