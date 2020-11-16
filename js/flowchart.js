@@ -14,6 +14,8 @@ class FlowChart {
         this.updateActCountry = updateActCountry;
         this.migration = data.migration;
         this.chart = d3.select("#flow-chart").append("svg");
+        this.innerRadius = 250;
+        this.outerRadius = 260;
     }
 
     drawChart(){
@@ -28,6 +30,7 @@ class FlowChart {
         let countryDict = {};
         let index = 0;
 
+
         this.migration.forEach((d) => {
             let size = countries.size
             if(countries.add(d.id).size > size){
@@ -35,6 +38,13 @@ class FlowChart {
                 index++;
             }
         });
+
+        let listCountries = [...countries];
+        let listCountryNames = [];
+        listCountries.forEach((d) => {
+            listCountryNames.push(countryDict[d].name)
+        })
+
 
         //Create empty matrix
         let countryMatrix = []
@@ -53,9 +63,9 @@ class FlowChart {
 
         this.migration.forEach((d) => {
             if(d.type == "Immigrants"){
-                if(countries.has(d.od_id) && (d.id == "AU" || d.od_id == "AU")){
+                if(countries.has(d.od_id) && (d.id == "US" || d.od_id == "US")){
                     if(!isNaN(d[year])){
-                        countryMatrix[countryDict[d.id].index][countryDict[d.od_id].index] = d[year];
+                        countryMatrix[countryDict[d.od_id].index][countryDict[d.id].index] = d[year];
 
                     }
                 }
@@ -63,7 +73,7 @@ class FlowChart {
         });
 
         let calc = d3.chordDirected()
-            .padAngle(0.02)     // padding between entities (black arc)
+            .padAngle(0.06)     // padding between entities (black arc)
             .sortSubgroups(d3.descending)
             (countryMatrix)
 
@@ -72,27 +82,33 @@ class FlowChart {
             .datum(calc)
             .append("g").attr("id", "countryNames")
             .selectAll("g")
-            .data(function(d) { return d.groups; })
+            .data(d => {
+                console.log(d);
+                console.log(d.groups);
+                return d.groups; })
             .enter()
             .append("g").attr("transform", "translate(350, 350)").attr("class", "categories")
             .append("path")
-            //.style("fill", "grey")
             .style("fill", d => d3.interpolateRainbow(color(d.index)))
             .style("stroke", d => d3.rgb(d3.interpolateRainbow(color(d.index))).darker())
             .attr("d", d3.arc()
-                .innerRadius(300)
-                .outerRadius(310)
+                .innerRadius(this.innerRadius)
+                .outerRadius(this.outerRadius)
             )
 
-        d3.selectAll(".categories").data(calc)
+        d3.selectAll(".categories").data(calc.groups)
             .each(d => { d.angle = (d.startAngle + d.endAngle) / 2;
-            console.log(d)})
+            console.log(d.angle)})
             .append("text")
             .attr("dy", ".35em")
-            .attr("transform", d => "rotate(" + d.angle * 180 / Math.PI - 90 + ") " +
-                "translate(" + 300 + 26 + ")")
+            .attr("transform", d => {
+                console.log(d.angle * 180 / Math.PI - 90)
+                return "rotate(" + (d.angle * 180 / Math.PI - 90) + ") " +
+                "translate(" + (this.innerRadius + 20) + ")" +
+                    (d.angle > Math.PI ? "rotate(180)" : "")})
             .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
-            .text("test");
+            .style("font-size", "10px")
+            .text(d => listCountryNames[d.index]);
 
         //Add paths
         this.chart
@@ -103,7 +119,7 @@ class FlowChart {
             .enter()
             .append("path")
             .attr("d", d3.ribbonArrow()
-                .radius(300)
+                .radius(this.innerRadius)
             )
             .style("fill", d => d3.interpolateRainbow(color(d.source.index)))
             .style("stroke", d => d3.rgb(d3.interpolateRainbow(color(d.source.index))).darker())
