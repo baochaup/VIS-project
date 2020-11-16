@@ -18,7 +18,7 @@ var svg = d3.select("#world_ranking")
 
 // Parse the Data
 
-d3.csv('data/migflow.csv').then( function(data) {
+d3.csv('dataviscourse-pr-worldmigration/data/migflow.csv').then( function(data) { 
    data.forEach(d => {
 	if (d["1980"] == "..") {d["1980"] = "0"}
 	d["1980"] = +d["1980"];
@@ -89,7 +89,7 @@ d3.csv('data/migflow.csv').then( function(data) {
 	if (d["2013"] == "..") {d["2013"] = "0"}
 	d["2013"] = +d["2013"];
     });
-    //console.log(data);
+    console.log(data);
 
     // X axis
     var x = d3.scaleBand()
