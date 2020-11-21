@@ -1,5 +1,3 @@
-//import {legend} from "@d3/color-legend";
-
 class CountryData {
   constructor(type, id, name, properties, geometry, region, lat, long) {
     this.type = type;
@@ -253,17 +251,11 @@ class WorldMap {
           .text(colorScaleLabel);
   }
 
-  // draw data flow lines
+  // draw data flow
   drawLinks() {
-    // remove before drawing new lines
-    //this.map.select("#lines-group").remove();
-
     // clear highlight countries bf draw
     this.clearHighlight();
 
-    //let linesGrp = this.map.append("g").attr("id", "lines-group");
-
-    //let lines = [];
     let type = this.isImmigration ? "Immigrants" : "Emigrants";
 
     // select only countries has migration data with selected country
@@ -272,44 +264,9 @@ class WorldMap {
     );
 
     flows.forEach((d) => {
-      if (
-        d.od_id === "XX" // ||
-        //d[this.activeYear] === 0 ||
-        //isNaN(d[this.activeYear])
-      ) {
+      if (d.od_id === "XX") {
         return;
       }
-
-      /*let sourceID = this.isImmigration ? d.od_id : this.activeCountry;
-      let destID = this.isImmigration ? this.activeCountry : d.od_id;
-
-      let source = this.coordinates.find((d) => d.country_code === sourceID);
-      let dest = this.coordinates.find((d) => d.country_code === destID);
-
-      let sourceLong = +source.longitude;
-      let sourceLat = +source.latitude;
-      let destLong = +dest.longitude;
-      let destLat = +dest.latitude;
-
-      //source = [sourceLong, sourceLat];
-      //dest = [destLong, destLat];
-      //let toPush = { type: "LineString", coordinates: [source, dest] };
-      let toPush = {
-        source: [sourceLong, sourceLat],
-        dest: [destLong, destLat]
-      };
-      lines.push(toPush);
-
-      linesGrp
-        .selectAll("flow-line")
-        .data(lines)
-        .enter()
-        .append("line")
-        .classed("line-string", true)
-        .attr("x1", d => this.projection(d.source)[0])
-        .attr("y1", d => this.projection(d.source)[1])
-        .attr("x2", d => this.projection(d.dest)[0])
-        .attr("y2", d => this.projection(d.dest)[1]);*/
 
       // highlight filtered countries
       //this.map.select(`#${d.od_id}`).classed("country-highlight", true);
@@ -323,21 +280,6 @@ class WorldMap {
             ? this.colorScaleIm(d[this.activeYear])
             : this.colorScaleEm(d[this.activeYear])
         );
-
-      // draw red circle at filtered countries
-      /*let highlight = this.coordinates.find((c) => c.country_code === d.od_id);
-      this.map
-        .append("circle")
-        .classed("country-marker", true)
-        .attr(
-          "cx",
-          this.projection([highlight.longitude, highlight.latitude])[0]
-        )
-        .attr(
-          "cy",
-          this.projection([highlight.longitude, highlight.latitude])[1]
-        )
-        .attr("r", 3);*/
     });
 
     // highlight selected country
