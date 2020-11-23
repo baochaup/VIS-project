@@ -83,8 +83,8 @@ class FlowChart {
             .append("g").attr("id", "countryNames")
             .selectAll("g")
             .data(d => {
-                console.log(d);
-                console.log(d.groups);
+                //console.log(d);
+                //console.log(d.groups);
                 return d.groups; })
             .enter()
             .append("g").attr("transform", "translate(350, 350)").attr("class", "categories")
@@ -98,11 +98,12 @@ class FlowChart {
 
         d3.selectAll(".categories").data(calc.groups)
             .each(d => { d.angle = (d.startAngle + d.endAngle) / 2;
-            console.log(d.angle)})
+            //console.log(d.angle)
+          })
             .append("text")
             .attr("dy", ".35em")
             .attr("transform", d => {
-                console.log(d.angle * 180 / Math.PI - 90)
+                //console.log(d.angle * 180 / Math.PI - 90)
                 return "rotate(" + (d.angle * 180 / Math.PI - 90) + ") " +
                 "translate(" + (this.innerRadius + 20) + ")" +
                     (d.angle > Math.PI ? "rotate(180)" : "")})

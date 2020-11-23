@@ -50,14 +50,32 @@ header {
   cursor: pointer;
 }
 
-/*.country-highlight {
-  stroke-width: 1.5px;
+.country-highlight {
+  stroke: rgb(0, 0, 0);
+  stroke-width: .8px;
+  transition: 0.3s;
 }
 
 .country-highlight:hover {
   cursor: pointer;
   fill: rgb(56, 56, 56);
-}*/
+}
+
+#map-tooltip {
+  position: absolute;
+  min-width: 300px;
+  min-height: 20px;
+  padding: 5px;
+  background: aquamarine;
+  stroke: gray;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+#map-tooltip * {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
 
 .selected-country {
   fill: burlywood;

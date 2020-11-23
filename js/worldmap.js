@@ -159,6 +159,10 @@ class WorldMap {
           this.drawLinks();
         })
     );
+
+    // add tooltip
+    d3.select("#map-chart").append("div").attr("id", "map-tooltip").style("opacity", 0);
+
     this.drawLegend();
   }
 
@@ -249,15 +253,29 @@ class WorldMap {
           .attr("y", "540")
           .classed("legend-label", true)
           .text(colorScaleLabel);
+
+    // add label for No data
+    legend.append("rect")
+          .attr("x", 200)
+          .attr("y", 525)
+          .attr("width", 20)
+          .attr("height", 20)
+          .style("fill", "gray");
+    legend.append("text")
+          .attr("x", "230")
+          .attr("y", "540")
+          .classed("legend-label", true)
+          .text("No data");
   }
 
   // draw data flow
   drawLinks() {
-    // clear highlight countries bf draw
+    // clear highlight countries before drawing
     this.clearHighlight();
 
+    let that = this;
     let type = this.isImmigration ? "Immigrants" : "Emigrants";
-
+    
     // select only countries has migration data with selected country
     let flows = this.migration.filter(
       (d) => d.type === type && d.id === this.activeCountry
@@ -269,35 +287,54 @@ class WorldMap {
       }
 
       // highlight filtered countries
-      //this.map.select(`#${d.od_id}`).classed("country-highlight", true);
       this.map
         .select(`#${d.od_id}`)
+        .classed("countries", false)
         .classed("country-highlight", true)
-        .style(
-          // style-fill has higher priority than attr-fill
-          "fill",
+        .attr("fill",
           this.isImmigration
-            ? this.colorScaleIm(d[this.activeYear])
-            : this.colorScaleEm(d[this.activeYear])
-        );
+          ? this.colorScaleIm(d[this.activeYear])
+          : this.colorScaleEm(d[this.activeYear]))
+        // render tooltip
+        .on("mouseover", function (e, data) {
+          d3.select("#map-tooltip").transition().duration(200).style("opacity", 1);
+          d3.select("#map-tooltip")
+            .html(that.tooltipRender(d))
+            .style("left", "35px")
+            .style("top", "620px");
+        })
+        .on("mouseleave", function (d, i) {
+          d3.select("#map-tooltip").transition().duration(200).style("opacity", 0);
+        });
+
     });
 
     // highlight selected country
     this.map
       .select(`#${this.activeCountry}`)
-      .classed("selected-country", true)
-      .style("fill", "burlywood");
+      .classed("selected-country", true);
+  }
+
+  tooltipRender(data) {
+    let num = isNaN(data[this.activeYear]) ? "No data" : data[this.activeYear];
+    let type = this.isImmigration ? "Immigrants" : "Emigrants";
+    let text = `<h4>${data.origin_dest}</h5>
+                <p>Number of ${type}: ${num}</p>`;
+    return text;
   }
 
   clearHighlight() {
     this.map
       .selectAll(".country-highlight")
+      .on("mouseover", null)
+      .on("mouseleave", null);
+    this.map
+      .selectAll(".country-highlight")
       .classed("country-highlight", false)
-      .style("fill", "white");
+      .classed("countries", true);
     this.map
       .select(".selected-country")
-      .classed("selected-country", false)
-      .style("fill", "white");
+      .classed("selected-country", false);
     this.map.selectAll(".country-marker").remove();
   }
 }

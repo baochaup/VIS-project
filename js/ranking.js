@@ -89,7 +89,7 @@ d3.csv('data/migflow.csv').then( function(data) {
 	if (d["2013"] == "..") {d["2013"] = "0"}
 	d["2013"] = +d["2013"];
     });
-    console.log(data);
+    //console.log(data);
 
     // X axis
     var x = d3.scaleBand()
