@@ -36,6 +36,11 @@ class WorldMap {
     this.width = document.getElementById("map-chart").clientWidth;
     this.height = document.getElementById("map-chart").clientHeight;
 
+    // obtain max values
+    this.maxIm = 0;
+    this.maxEm = 0;
+    this.findMax();
+
     // set scale
     // use log scale as the gap between smallest and largest is too great
     this.colorScaleIm = d3
@@ -43,30 +48,37 @@ class WorldMap {
       .clamp(true)
       .unknown("gray")
       .range(["white", "red"])
-      .domain([1, this.findMax("Immigrants")]);
+      .domain([1, this.maxIm]);
 
     this.colorScaleEm = d3
       .scaleLog()
       .clamp(true)
       .unknown("gray")
       .range(["white", "blue"])
-      .domain([1, this.findMax("Emigrants")]);
+      .domain([1, this.maxEm]);
   }
 
-  // find max value of immigration data
-  findMax(str) {
-    let max = 0;
+  // find max value of migration data
+  findMax() {
+    
     this.migration.forEach((d) => {
       // exclude unkown and total
-      if (d.type === str && d.od_id !== "XX") {
+      if (d.type === "Immigrants" && d.od_id !== "XX") {
         for (const [key, value] of Object.entries(d)) {
-          if (!isNaN(key) && value > max) {
-            max = value;
+          if (!isNaN(key) && value > this.maxIm) {
+            this.maxIm = value;
+          }
+        }
+      }
+
+      if (d.type === "Emigrants" && d.od_id !== "XX") {
+        for (const [key, value] of Object.entries(d)) {
+          if (!isNaN(key) && value > this.maxEm) {
+            this.maxEm = value;
           }
         }
       }
     });
-    return max;
   }
 
   /**
@@ -196,7 +208,7 @@ class WorldMap {
     
     // set scale for axis
     let axisScale = d3
-      .scaleLinear()
+      .scaleLog() // log scale to match color scale
       .domain(colorScale.domain())
       .range([0, width]).nice();
 
@@ -208,7 +220,9 @@ class WorldMap {
         .call(
           d3
             .axisBottom(axisScale)
-            .ticks(width / 50)
+            // The s directive for SI-prefix formatting 
+            // is a common choice for human-readable log ticks
+            .ticks(6, "~s") // 6 ticks
             .tickSize(-barHeight)
         );
 
@@ -300,8 +314,8 @@ class WorldMap {
           d3.select("#map-tooltip").transition().duration(200).style("opacity", 1);
           d3.select("#map-tooltip")
             .html(that.tooltipRender(d))
-            .style("left", "35px")
-            .style("top", "620px");
+            .style("left", "15px")
+            .style("top", "470px");
         })
         .on("mouseleave", function (d, i) {
           d3.select("#map-tooltip").transition().duration(200).style("opacity", 0);

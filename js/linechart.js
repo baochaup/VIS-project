@@ -1,0 +1,195 @@
+class LineChart {
+  constructor(data, activeCountry, years) {
+    this.margin = { top: 10, right: 30, bottom: 35, left: 75 };
+    this.width = 700 - this.margin.left - this.margin.right;
+    this.height = 500 - this.margin.top - this.margin.bottom;
+
+    this.migration = data.migration;
+    this.activeCountry = activeCountry;
+    this.years = years;
+
+    this.chart = d3.select("#line-chart").append("svg");
+    this.chart
+      .attr("width", this.width + this.margin.left + this.margin.right)
+      .attr("height", this.height + this.margin.top + this.margin.bottom)
+      .attr("transform", `translate(0, 150)`);
+
+    // obtain max total values
+    this.maxVal = 0;
+    this.findMax();
+
+    // create scales
+    // x scale for year
+    this.xScale = d3
+      .scaleLinear()
+      .domain([d3.min(years), d3.max(years)])
+      .range([this.margin.left, this.width]);
+    //.nice();
+    // y scale
+    this.yScale = d3
+      .scaleLinear()
+      .domain([0, this.maxVal])
+      .range([this.height, 0]);
+    //.nice();
+  }
+
+  // find max total value of migration data
+  findMax() {
+    this.migration.forEach((d) => {
+      if (d.od_id === "XX" && d.origin_dest === "Total") {
+        for (const [key, value] of Object.entries(d)) {
+          if (!isNaN(key) && value > this.maxVal) {
+            this.maxVal = value;
+          }
+        }
+      }
+    });
+  }
+
+  drawChart() {
+    // draw x axis
+    this.chart
+      .append("g")
+      .attr("id", "x-axis-line")
+      .attr("transform", `translate(0, ${this.height})`)
+      .call(d3.axisBottom(this.xScale));
+
+    // draw x axis label
+    this.chart
+      .append("text")
+      .classed("x-axis-label", true)
+      .text("Year")
+      .style("text-anchor", "middle")
+      .attr(
+        "transform",
+        `translate(${this.width / 2}, ${this.height + this.margin.bottom})`
+      );
+
+    // draw y axis
+    this.chart
+      .append("g")
+      .attr("id", "y-axis-line")
+      .attr("transform", `translate(${this.margin.left}, 0)`)
+      .call(d3.axisLeft(this.yScale));
+
+    // draw y axis label
+    this.chart
+      .append("text")
+      .classed("y-axis-label", true)
+      .text("Number of Migrants")
+      .style("text-anchor", "middle")
+      .attr("transform", `translate(15, ${this.height / 2})rotate(-90)`);
+
+    // add line paths
+    this.chart.append("path").attr("id", "immigration-line");
+    this.chart.append("path").attr("id", "emigration-line");
+    this.chart.append("path").attr("id", "gap-immigration-line");
+    this.chart.append("path").attr("id", "gap-emigration-line");
+  }
+
+  updateCountry(activeCountry) {
+    this.activeCountry = activeCountry;
+    this.drawLines();
+  }
+
+  drawLines() {
+    // filter data by active country
+    let filtered = this.migration.filter(
+      (d) =>
+        d.id === this.activeCountry &&
+        d.od_id === "XX" &&
+        d.origin_dest === "Total"
+    );
+
+    // re compute domains
+    this.maxVal = 0;
+    filtered.forEach((d) => {
+      for (const [key, value] of Object.entries(d)) {
+        if (!isNaN(key)) {
+          this.maxVal = value > this.maxVal ? value : this.maxVal;
+        }
+      }
+    });
+    // update domain
+    this.yScale.domain([0, this.maxVal]);
+    // update y axis
+    this.chart
+      .select("#y-axis-line")
+      .transition()
+      .duration(1000)
+      .call(d3.axisLeft(this.yScale));
+
+    // line generator for both types
+    let lineGenerator = d3
+      .line()
+      .defined((d) => !isNaN(d.num))
+      .x((d) => this.xScale(d.year))
+      .y((d) => this.yScale(d.num));
+
+    // function to add animation to lines
+    function animate(line) {
+      let length = line.node().getTotalLength();
+      line
+        .attr("stroke-dasharray", length + " " + length)
+        .attr("stroke-dashoffset", length)
+        .transition()
+        .duration(1000)
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0);
+    }
+
+    // compute data for immigration
+    let im = filtered.filter((d) => d.type === "Immigrants")[0];
+    let imdata = [];
+
+    if (im) {
+      for (const [key, value] of Object.entries(im)) {
+        if (!isNaN(key)) {
+          imdata.push({ year: +key, num: value });
+        }
+      }
+      //console.log(imdata);
+      // draw gap line
+      let gapLine = d3
+        .select("#gap-immigration-line")
+        .datum(imdata.filter(lineGenerator.defined()))
+        .attr("d", lineGenerator);
+      // draw line for immigration
+      let segLine = d3
+        .select("#immigration-line")
+        .datum(imdata)
+        .attr("d", lineGenerator);
+
+      animate(gapLine);
+      animate(segLine);
+    }
+
+    // compute data for emigration
+    let em = filtered.filter((d) => d.type === "Emigrants")[0];
+    let emdata = [];
+
+    if (em) {
+      for (const [key, value] of Object.entries(em)) {
+        if (!isNaN(key)) {
+          emdata.push({ year: +key, num: value });
+        }
+      }
+      //console.log(emdata);
+      // draw gap line
+      let gapLine = d3
+        .select("#gap-emigration-line")
+        .datum(emdata.filter(lineGenerator.defined()))
+        .attr("d", lineGenerator);
+      // draw line for emigration
+      let segLine = d3
+        .select("#emigration-line")
+        .datum(emdata)
+        .attr("d", lineGenerator);
+
+      animate(gapLine);
+      animate(segLine);
+    }
+  }
+
+  drawLegend() {}
+}

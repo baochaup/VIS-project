@@ -18,14 +18,18 @@ loadData().then((data) => {
 
   function updateActCountry(countryID) {
     that.activeCountry = countryID;
+    lineChart.updateCountry(that.activeCountry);
   }
+
+  // create an array of years
+  let years = Object.keys(data.migration[0]).filter((k) => !isNaN(k));
 
   // render toggle button
   const toggleFlow = new ToggleButton(this.isImmigration, updateFlow);
   toggleFlow.drawToggle();
 
   // render year combo box
-  const yearBox = new YearBox(data, this.activeYear, updateYear);
+  const yearBox = new YearBox(data, this.activeYear, years, updateYear);
   yearBox.drawBox();
 
   // initialize and draw world map
@@ -33,6 +37,10 @@ loadData().then((data) => {
   d3.json("data/world-geo.json").then((mapData) => {
     worldMap.drawMap(mapData);
   });
+
+  // initialize and draw line chart
+  const lineChart = new LineChart(data, this.activeCountry, years);
+  lineChart.drawChart();
 
   // Flow Chart
   const flowChart = new FlowChart(data, this.activeYear, this.isImmigration, updateActCountry);

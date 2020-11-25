@@ -20,6 +20,7 @@ header {
   grid-row: 1 / 2;
   background: ivory;
   border: 1px solid darkgray;
+  position: relative;
 }
 
 #map-chart svg {
@@ -178,7 +179,25 @@ input:checked + .slider:before {
 .linechart {
   grid-column: 2 / 3;
   grid-row: 3 / 4;
-  background-color: aquamarine;
+  position: relative;
+}
+
+#immigration-line {
+  fill: none;
+  stroke: red;
+  stroke-width: 1.5;
+}
+
+#emigration-line {
+  fill: none;
+  stroke: blue;
+  stroke-width: 1.5;
+}
+
+#gap-immigration-line, #gap-emigration-line {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 0.5;
 }
 
 /*table styling*/

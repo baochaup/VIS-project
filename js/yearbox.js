@@ -1,6 +1,6 @@
 class YearBox {
-  constructor(data, activeYear, updateYear) {
-    this.years = Object.keys(data.migration[0]).filter((k) => !isNaN(k));
+  constructor(data, activeYear, years, updateYear) {
+    this.years = years;
     this.activeYear = activeYear;
     this.updateYear = updateYear;
   }
