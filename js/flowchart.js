@@ -111,7 +111,7 @@ class FlowChart {
 
         //Handle new countries
         let newCountries = countries.enter().append("g").attr("transform", "translate(350, 350)")
-            .attr("class", "country");
+            .attr("class", "country").attr("id", d => this.listCountryNames[d.index]);
 
         //Add arcs
         newCountries.append("path")
@@ -158,6 +158,7 @@ class FlowChart {
         let newLinks = links.enter()
             .append("path")
             .attr("class", "links").attr("transform", "translate(350, 350)")
+            .attr("id", d => this.listCountryNames[d.source.index])
             .attr("opacity", 0.8)
             .style("fill", d => d3.interpolateRainbow(this.colorScale(d.source.index)))
             .style("stroke", d => d3.rgb(d3.interpolateRainbow(this.colorScale(d.source.index))).darker())
@@ -178,5 +179,21 @@ class FlowChart {
             .style("stroke", d => d3.rgb(d3.interpolateRainbow(this.colorScale(d.source.index))).darker())
             .attr("d", d3.ribbonArrow()
                 .radius(this.innerRadius));
+
+        d3.selectAll(".country")
+            .on("mouseover", fade(.02))
+            .on("mouseout", fade(.80));
+
+        let that = this;
+        function fade(opacity) {
+            return function(d, i) {
+                that.chart.selectAll("path.links")
+                    .filter(function(d) {
+                        return d.source.index != i.index && d.target.index != i.index; })
+                    .transition()
+                    .style("stroke-opacity", opacity)
+                    .style("fill-opacity", opacity);
+            };
+        };
     }
 }
