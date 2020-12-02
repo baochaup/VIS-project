@@ -8,6 +8,7 @@ loadData().then((data) => {
   function updateYear(year) {
     that.activeYear = year;
     worldMap.updateYear(that.activeYear);
+    tableChart.updateYear(that.activeYear);
   }
 
   function updateFlow(isImmigration) {
@@ -19,6 +20,7 @@ loadData().then((data) => {
   function updateActCountry(countryID) {
     that.activeCountry = countryID;
     lineChart.updateCountry(that.activeCountry);
+    tableChart.updateCountry(that.activeCountry);
   }
 
   // create an array of years
@@ -41,6 +43,9 @@ loadData().then((data) => {
   // initialize and draw line chart
   const lineChart = new LineChart(data, this.activeCountry, years);
   lineChart.drawChart();
+
+  // initialize and draw table chart
+  const tableChart = new TableChart(data, this.activeCountry, this.activeYear);
 
   // Flow Chart
   const flowChart = new FlowChart(data, this.activeYear, this.isImmigration, updateActCountry);

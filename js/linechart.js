@@ -12,7 +12,7 @@ class LineChart {
     this.chart
       .attr("width", this.width + this.margin.left + this.margin.right)
       .attr("height", this.height + this.margin.top + this.margin.bottom)
-      .attr("transform", `translate(0, 150)`);
+      .attr("transform", `translate(0, 100)`);
 
     // obtain max total values
     this.maxVal = 0;
@@ -85,6 +85,11 @@ class LineChart {
     this.chart.append("path").attr("id", "emigration-line");
     this.chart.append("path").attr("id", "gap-immigration-line");
     this.chart.append("path").attr("id", "gap-emigration-line");
+
+    // add description
+    d3.select("#line-chart").append("div")
+      .classed("explain", true)
+      .text("This chart shows number of immigrants and emigrants from 1980 to 2015.");
   }
 
   updateCountry(activeCountry) {
@@ -93,6 +98,8 @@ class LineChart {
   }
 
   drawLines() {
+    this.cleanUp();
+
     // filter data by active country
     let filtered = this.migration.filter(
       (d) =>
@@ -138,6 +145,10 @@ class LineChart {
         .attr("stroke-dashoffset", 0);
     }
 
+    // for computing total number of immigrants and emigrants
+    let totalIm = 0;
+    let totalEm = 0;
+
     // compute data for immigration
     let im = filtered.filter((d) => d.type === "Immigrants")[0];
     let imdata = [];
@@ -146,6 +157,9 @@ class LineChart {
       for (const [key, value] of Object.entries(im)) {
         if (!isNaN(key)) {
           imdata.push({ year: +key, num: value });
+          if (!isNaN(value)) {
+            totalIm += value;
+          }         
         }
       }
       //console.log(imdata);
@@ -172,6 +186,9 @@ class LineChart {
       for (const [key, value] of Object.entries(em)) {
         if (!isNaN(key)) {
           emdata.push({ year: +key, num: value });
+          if (!isNaN(value)) {
+            totalEm += value;
+          } 
         }
       }
       //console.log(emdata);
@@ -189,7 +206,43 @@ class LineChart {
       animate(gapLine);
       animate(segLine);
     }
+
+    this.updateLegend(totalIm, totalEm);
   }
 
-  drawLegend() {}
+  updateLegend(totalIm, totalEm) {
+
+    // obtain country name
+    let ctrName = this.migration.filter(d => d.id === this.activeCountry)[0].country_name;
+
+    // update country
+    d3.select("#line-chart")
+      .append("div")
+      .attr("id", "line-country")
+      .text(`Selected country: ${ctrName}`);
+
+    // update total number of immigrants
+    d3.select("#line-chart")
+      .append("div")
+      .attr("id", "line-totalIm")
+      .text(`Total number of immigrants: ${totalIm.toLocaleString()}`);
+
+    // update total number of emigrants
+    d3.select("#line-chart")
+      .append("div")
+      .attr("id", "line-totalEm")
+      .text(`Total number of emigrants: ${totalEm.toLocaleString()}`);
+  }
+
+  cleanUp() {
+    // A null value will remove the specified attribute
+    this.chart.select("#immigration-line").attr("d", null);
+    this.chart.select("#emigration-line").attr("d", null);
+    this.chart.select("#gap-immigration-line").attr("d", null);
+    this.chart.select("#gap-emigration-line").attr("d", null);
+
+    d3.select("#line-country").remove();
+    d3.select("#line-totalIm").remove();
+    d3.select("#line-totalEm").remove();
+  }
 }

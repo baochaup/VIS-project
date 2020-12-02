@@ -18,8 +18,28 @@
       <div class="desc" id="tool-desc"></div>
       <div class="flowchart" id="flow-chart"></div>
       <div class="linechart" id="line-chart"></div>
-      <div class="table">
-        Table: show migration data of the selected country
+      <div class="table" id="table-chart">
+        <div class="table-explain">
+          This table lists all the countries which have migration flow to the selected country
+           of the selected year.
+        </div>
+        <div>
+          <table class="table-view">
+            <thead>
+              <tr id="columnHeaders">
+                <th class="sortable">Country</th>
+                <th class="sortable">Number of Immigrants</th>
+                <th class="sortable">Number of Emigrants</th>
+              </tr>
+              <tr>
+                <td></td>
+                <td><svg id="marginAxisIm"></svg></td>
+                <td><svg id="marginAxisEm"></svg></td>
+              </tr>
+            </thead>
+            <tbody id="tableChartBody"></tbody>
+          </table>
+        </div>
       </div>
       <div class="barchart" id="world_ranking">
         Bar chart: show ranking
@@ -28,6 +48,7 @@
 
     <script src="js/worldmap.js" async></script>
     <script src="js/linechart.js" async></script>
+    <script src="js/tablechart.js" async></script>
     <script src="js/flowchart.js" async></script>
     <script src="js/yearbox.js" async></script>
     <script src="js/togglebutton.js" async></script>
