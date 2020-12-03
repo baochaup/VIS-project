@@ -11,7 +11,7 @@ header {
 
   display: grid;
   grid-template-columns: 700px 700px;
-  grid-template-rows: 600px 100px 700px 700px;
+  grid-template-rows: 600px 50px 700px 700px;
 }
 
 /*world map styling*/
@@ -185,7 +185,7 @@ input:checked + .slider:before {
 .explain {
   position: absolute;
   top: 0;
-  left: 75px;
+  left: 0;
 }
 
 #line-country {
@@ -229,13 +229,9 @@ input:checked + .slider:before {
 
 /*table styling*/
 .table {
-  grid-column: 1 / 2;
+  grid-column: 2 / 3;
   grid-row: 4 / 5;
   position: relative; 
-}
-
-.table-explain {
-  margin-top: 50px;
 }
 
 .table-view {
@@ -255,6 +251,10 @@ th {
   cursor: pointer;
 }
 
+tbody tr:hover {
+  background-color: rgb(144, 177, 180);
+}
+
 .immigrant-bar {
   fill: red;
 }
@@ -265,6 +265,6 @@ th {
 
 /*bar chart styling*/
 .barchart {
-  grid-column: 2 / 3;
+  grid-column: 1 / 2;
   grid-row: 4 / 5;
 }
